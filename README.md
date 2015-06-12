@@ -1,0 +1,1 @@
+This repo contains some examples of working with MongoDB.
