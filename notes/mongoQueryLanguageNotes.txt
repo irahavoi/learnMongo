@@ -1,0 +1,10 @@
+Query Selectors:
+
+    ----------------------------- Selector Matching: ---------------------------------
+    db.users.find({first_name: "Smith", age: 40}) <-- Both criteria should match (AND)
+
+    ----------------------------- Ranges: --------------------------------------------
+    $lt, $lte, $gt, $gte
+    db.users.find({age: {$gte: 0, $lte: 30})
+
+    ----------------------------- Set Operators: -------------------------------------

@@ -1,0 +1,33 @@
+findOne returns a document
+find - returns a cursor object
+
+db.products.findOne({'slug': 'wheel-barrow-9092'})
+db.categories.findOne({'_id': product['main_cat_id']})
+db.reviews.find({'product_id': product['_id']})
+
+Most applications paginate reviews, and for this MongoDB provides skip and
+limit options. You can use these options to paginate the review document like so:
+
+db.reviews.find({'product_id': product['_id']}).skip(0).limit(12)
+
+Sorting:
+ASC
+db.reviews.find().sort({score:1})
+DESC
+db.reviews.find().sort({score:-1})
+
+
+If you do not need the whole document, but just one or several fields, use projection:
+Getting only user names:
+> db.users.find({age: {$gt: 21}}, {username:1})
+
+Partial match:
+Searching for all users that have 'gmail' emails. Use regular expressions:
+ db.users.find({email: /gmail/})
+
+Range search. Get all users aged 25-30:
+To make this query efficient, you’ll want an index defined on age field.
+db.users.find({age: {$gte: 25, $lte:30}})
+
+Creating a compound index:
+db.orders.ensureIndex({'line_items.sku': 1, 'purchase_date': 1})
