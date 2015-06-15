@@ -1,0 +1,89 @@
+Atomic document processing:
+findAndModify - allows you to atomically update a document and return it in the same round trip.
+
+For instance, you can use findAndModify to build job queues and state machines. You can then use these primitive
+constructs to implement basic transactional semantics, which greatly expand the
+range of applications you can build using MongoDB. With these transaction-like features,
+you can construct an entire e-commerce site on MongoDB—not just the product
+content, but the checkout mechanism and the inventory management as well.
+
+findAndModify - finds and modifies only one object!!
+db.users.findAndModify({ query :{},  update : {"$set" : {"role": "admin"}}})
+
+
+Multidocument Updates:
+An update will, by default, only update the first document matched by its query selector.
+To update multiple documents:
+ db.users.update({}, {$addToSet:{tags:'vip'}},false,true)
+
+ notice true as the 4th argument - it tells mongodb to update all matching users, not just the 1st one.
+
+Upserts:
+It’s common to need to insert if an item doesn’t exist but update it if it does.
+If the query selector matches, the update takes place normally. But if no document matches
+the query selector, a new document will be inserted:
+
+db.users.update({username: 'irahavoi'}, {$addToSet: {tags: 'vip'}}, true)
+
+upserts deal with only one document at a time.
+
+
+------------------------Update Operators---------------------------------------------
+$inc - increments or decrements a numeric value.
+db.users.update({}, {$inc: {age: 1}}, false,true)
+
+$set and $unset
+
+$rename - If you need to change the name of a key, use $rename
+
+db.users.update({}, {$rename: {'tags' : 'attrs'}}, false,true)
+
+Array update operators:
+$push - add a single value to an array
+$pushAll - supports adding a list of values
+
+db.users.update({}, {$pushAll: {'attrs': ['js, android, java']}}, false, true)
+
+$addToSet - it also adds a value to the array, but only if it does not exist.
+db.products.update({slug: 'shovel'}, {$addToSet: {'tags': 'tools'}})
+If you need to add more than one value to an array uniquely in the same operation,
+then you must use $addToSet with the $each operator:
+db.products.update({slug: 'shovel'},
+{$addToSet: {'tags': {$each: ['tools', 'dirt', 'steel']}}})
+
+$pop - will remove the last item pushed
+{$pop: {'tags': 1} - remove last element
+{$pop: {'tags': -1} - remove first element
+
+
+$pull and $pullAll -
+With $pull, you specify exactly which array element to remove by value, not by position.
+db.products.update({slug: 'shovel'}, {$pullAll {'tags': ['dirt', 'garden']}})
+
+
+Positional updates:
+update = {$set: {'line_items.$.quantity': 5}}
+
+
+findAndModify:
+ query—A document query selector. Defaults to {}.
+ update—A document specifying an update. Defaults to {}.
+ remove—A Boolean value that, when true, removes the object and then returns
+it. Defaults to false.
+ new—A Boolean that, if true, returns the modified document as it appears after
+the update has been applied. Defaults to false.
+ sort—A document specifying a sort direction. Because findAndModify will
+modify only one document at a time, the sort option can be used to help control
+which matching document is processed. For example, you might sort by
+{created_at: -1} to process to most recently created matching document.
+ fields—If you only need to return a subset of fields, use this option to specify
+them. This is especially helpful with larger documents. The fields are specified
+just as they would be in any query. See the section on fields in chapter 5 for
+examples.
+ upsert—A Boolean that, when true, treats findAndModify as an upsert. If the
+document sought doesn’t exist, it’ll be created. Note that if you want to return
+the newly created document, you also need to specify {new: true}.
+
+
+
+
