@@ -87,3 +87,40 @@ the newly created document, you also need to specify {new: true}.
 
 
 
+
+------------------------------- Deletes ----------------------------------------
+Deleting all:
+db.reviews.remove({})
+
+db.reviews.remove({user_id: ObjectId('4c4b1476238d3b4dd5000001')})
+
+
+
+------------------------------- Concurrency, atomicity, and isolation------------
+a single global reader-writer lock reigns over the entire mongod instance
+
+All inserts, updates, and removes take a
+write lock. Inserts rarely take a long time to complete. But updates that affect, say, an
+entire collection, as well as deletes that affect a lot of documents, can run long. The
+current solution to this is to allow these long-running ops to yield periodically for
+other readers and writers.
+
+When an operation yields, it pauses itself, releases its lock, and resumes later.
+
+It’s easy to imagine situations where you’d want all documents
+updated or removed before any other operation takes place. For these cases, you can
+use a special option called $atomic to keep the operation from yielding. You simply
+add the $atomic operator to the query selector like so:
+
+db.reviews.remove({user_id: ObjectId('4c4b1476238d3b4dd5000001'), {$atomic: true}})
+
+The same can be applied to any multi-update. This forces the entire multi-update to
+complete in isolation:
+db.reviews.update({$atomic: true}, {$set: {rating: 0}}, false, true)
+
+
+
+
+
+
+
