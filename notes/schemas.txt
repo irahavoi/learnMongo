@@ -1,0 +1,10 @@
+Creating a unique index:
+db.products.ensureIndex({slug: 1}, {unique: true})
+
+
+Many to many queries:
+Finding categories matching the product:
+db.categories.find({_id : {$in: db.products.findOne()['category_ids']}})
+
+Finding products by the category:
+db.products.find({category_ids: db.categories.findOne()['_id']})

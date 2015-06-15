@@ -1,0 +1,7 @@
+{slug: "wheel-barrow-9092",sku: "9092",name: "Extra Large Wheel Barrow",details : {weight: 47,model_num:3433352},category_ids:[new ObjectId("557dfc60ba608d1d12ed779e")],main_cat_id: new ObjectId("557dfc60ba608d1d12ed779e")}
+
+
+db.categories.find({
+    _id
+}: {$in: products['category_ids']
+})
