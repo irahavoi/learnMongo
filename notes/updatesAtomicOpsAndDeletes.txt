@@ -1,0 +1,29 @@
+Document Updates:
+There are 2 options when updating a document:
+1. Replace the document altogether:
+    user_id = BSON::ObjectId("4c4b1476238d3b4dd5000001")
+    doc = @users.find_one({:_id => user_id})
+    doc['email'] = 'mongodb-user@10gen.com'
+    @users.update({:_id => user_id}, doc, :safe => true)
+
+    Very generic approach. Less code.
+
+2. Use some combination of update operators to modify specific fields within the document:
+    @users.update({:_id => user_id}, {'$set' => {:email => 'mongodb-user@10gen.com'}}, :safe => true)
+
+    If you need to add some child item to the collection of your document, use $push:
+
+    @users.update({:_id => user_id},
+        {'$push' => {:addresses =>
+            {:name => "work",
+             :street => "17 W. 18th St.",
+             :city => "New York",
+             :state => "NY",
+             :zip => 10011
+            }
+        }
+    })
+
+    More code, less generic. Higher performance.
+
+
