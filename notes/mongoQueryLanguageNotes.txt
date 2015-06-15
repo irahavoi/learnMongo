@@ -8,3 +8,13 @@ Query Selectors:
     db.users.find({age: {$gte: 0, $lte: 30})
 
     ----------------------------- Set Operators: -------------------------------------
+    $in, $all, $nin - take a list of one or more values as their predicate
+
+    $in - returns a document if any of the given values matches the search key.
+    db.users.find({username: {$in: ['Illia', 'Nadia']}})
+
+    $nin - returns a document if non of the given values matches the search key:
+    db.users.find({username: {$nin: ['Illia', 'Nadia']}})
+
+    $all - returns a document if every given element matches the search key.
+    db.products.find(tags: { $all: ["gift", "garden"] }
