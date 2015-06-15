@@ -18,3 +18,156 @@ Query Selectors:
 
     $all - returns a document if every given element matches the search key.
     db.products.find(tags: { $all: ["gift", "garden"] }
+    This query make sense only if the tags attribute stores an array of terms.
+
+    Keep in mind that $in and $all can take advantage of
+    indexes, but $nin can’t and thus requires a collection scan. If you use $nin, try to use
+    it in combination with another query term that does use an index.
+
+
+    ----------------------------- Boolean Operators: ----------------------------------
+    $ne, $not, $or, $and, $exists
+    $ne - works on keys pointing to single values and to arrays
+    $not - negates the result of another MongoDB operator or regular expression query
+    $or - expresses the logical disjunction of two values for TWO DIFFERENT keys
+    (if you want to test different values for the SAME key, use $in instead)
+    $and - use only when you can’t express an AND in a simpler way.
+    $exists - this operator is necessary because collections don’t enforce a fixed schema,
+              so you occasionally need a way to query for documents containing a particular key.
+        db.products.find({'details.color': {$exists: true}})
+        The same as:
+        db.products.find({'details.color': null})
+        Opposite to:
+        db.products.find({'details.color': {$ne: null}})
+
+
+    ----------------------------- Matching Subdocuments: --------------------------------
+    You can query embedded objects. Queries may be arbitrarily deep:
+    db.products.find({'details.manufacturer.id': 432});
+
+
+    ----------------------------- Arrays: -----------------------------------------------
+    For a product with tags: ["tools", "equipment", "soil"], you can search:
+    db.products.find({tags: "soil"})
+    When you need more control over your array queries, you can use dot notation to
+    query for a value at a particular position within the array:
+    db.products.find({'tags.0': "soil"})
+
+    To restrict multiple conditions to the same sub-document, you use the $elemMatch operator.
+    db.users.find({addresses: {$elemMatch: {name: 'home', state: 'NY'}}})
+
+    $size operator allows to query for an array by its size.
+    Looking for users with three addresses:
+    db.users.find({addresses: {$size: 3}})
+
+    ----------------------------- Javascript: -----------------------------------------------
+    If you can’t express your query with the tools described thus far, then you may need to
+    write some JavaScript. You can use the special $where operator to pass a JavaScript
+    expression to any query. Within a JavaScript context, the keyword this refers to the
+    current document.
+
+    db.reviews.find({$where: "function() { return this.helpful_votes > 3; }"}})
+    There is also an abbreviated form of this expression:
+    db.reviews.find({$where: "this.helpful_votes > 3"}})
+
+    The problem is that JavaScript expressions can’t use an index, and they incur substantial overhead
+    because they must be evaluated within a JavaScript interpreter context.
+
+    In addition to recognizing the attendant performance penalties, it’s good to be
+    aware of the possibility of JavaScript injection attacks.
+
+    ----------------------------- Miscellaneous query operators: -----------------------------
+    $mod - allows to query documents matching a given modulo operation.
+    db.orders.find({subtotal: {$mod: [3, 0]}})
+    $mod operator takes an array having two values. The first is the
+    divisor and the second is the expected remainder.
+
+    $type - matches values by their BSON type.
+    db.users.find({_id: {$type: 2}})
+
+
+
+    ----------------------------- Query options: -----------------------------
+    Projection: You can use a projection to select a subset of fields to return from each document in a
+                query result set.
+            db.users.find({}, {username: 1})
+
+    In some situations you may want to specify fields to exclude, instead.
+    To exclude them, add those fields to the projection with a value of 0:
+            db.users.find({}, {hashedpass: 0})
+
+    To return the first 12 reviews, or the last 5, you’d use $slice like so:
+            db.products.find({}, {reviews: {$slice: 12}})
+            db.products.find({}, {reviews: {$slice: -5}})
+
+    $slice can also take a two-element array whose values represent numbers to skip and limit, respectively:
+            db.products.find({}, {reviews: {$slice: [24, 12]}})
+
+    Finally, note that using $slice won’t prevent other fields from being returned. If you
+    want to limit the other fields in the document, you must do so explicitly:
+        db.products.find({}, {reviews: {$slice: [24, 12]}, 'reviews.rating': 1})
+
+
+    ----------------------------- Sorting: -------------------------------------
+    db.reviews.find({}).sort({helpful_votes:-1, rating: -1})
+
+    ----------------------------- Skip and limit: ------------------------------
+    db.docs.find({}).skip(50).limit(10).sort({date: -1})
+
+    ----------------------------- Aggregation: ------------------------------
+    Grouping:
+    group takes a minimum of three arguments:
+    key - defines how the data should be grouped
+    reduce - js function that aggreaates over a result set.
+    document - initial document for reduce function
+
+       Calculating the sum:
+       db.orders.group(
+          {
+            key: { ord_dt: 1, 'item.sku': 1 },
+            cond: { ord_dt: { $gt: new Date( '01/01/2012' ) } },
+            reduce: function( curr, result ) {
+                        result.total += curr.item.qty;
+                    },
+            initial: { total : 0 }
+          }
+       )
+
+    ----------------------------- Map-Reduce: ------------------------------
+    With map-reduce, you have finer-grained control over the grouping key, and you have a
+    variety of output options, including the ability to store the results in a new collection,
+    allowing for flexible retrieval of that data later on.
+
+    Map-reduce is a data processing paradigm for condensing large volumes of data into useful aggregated results.
+
+    http://docs.mongodb.org/manual/core/map-reduce/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

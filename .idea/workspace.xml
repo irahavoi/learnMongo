@@ -52,8 +52,8 @@
       <file leaf-file-name="mongoQueryLanguageNotes.txt" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/notes/mongoQueryLanguageNotes.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5540309" vertical-offset="0" max-vertical-offset="583">
-              <caret line="19" column="55" selection-start-line="19" selection-start-column="55" selection-end-line="19" selection-end-column="55" />
+            <state vertical-scroll-proportion="0.88336194" vertical-offset="1899" max-vertical-offset="3043">
+              <caret line="142" column="51" selection-start-line="142" selection-start-column="51" selection-end-line="142" selection-end-column="51" />
               <folding />
             </state>
           </provider>
@@ -423,12 +423,12 @@
       <workItem from="1434297856766" duration="4983000" />
       <workItem from="1434324348563" duration="3317000" />
       <workItem from="1434340515510" duration="2384000" />
-      <workItem from="1434376278808" duration="3214000" />
+      <workItem from="1434376278808" duration="10131000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="25344000" />
+    <option name="totallyTimeSpent" value="32261000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1920" height="1040" extended-state="0" />
@@ -704,8 +704,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/notes/mongoQueryLanguageNotes.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5540309" vertical-offset="0" max-vertical-offset="583">
-          <caret line="19" column="55" selection-start-line="19" selection-start-column="55" selection-end-line="19" selection-end-column="55" />
+        <state vertical-scroll-proportion="0.88336194" vertical-offset="1899" max-vertical-offset="3043">
+          <caret line="142" column="51" selection-start-line="142" selection-start-column="51" selection-end-line="142" selection-end-column="51" />
           <folding />
         </state>
       </provider>
