@@ -8,3 +8,39 @@ db.categories.find({_id : {$in: db.products.findOne()['category_ids']}})
 
 Finding products by the category:
 db.products.find({category_ids: db.categories.findOne()['_id']})
+
+
+Creating a collection:
+db.createCollection("users")
+
+Renaming a collection:
+db.products.renameCollection("store_products")
+
+Capped Collections - where originally designed for
+high-performance logging scenarios. They’re distinguished from standard collections
+by their fixed size. This means that once a capped collection reaches its maximum
+size, subsequent inserts will overwrite the least-recently-inserted documents in the collection.
+
+db.createCollection("logs", {capped:true, size:1024})
+
+differences between capped
+and standard collections. First, the index on _id isn’t created by default for a capped
+collection. This is a performance optimization; without an index, inserts take less
+time. If you do want an index on _id, you can build the index manually. With no
+indexes defined, it’s best to think of a capped collection as a data structure that you
+process sequentially in lieu of querying randomly.
+
+For this purpose, MongoDB provides
+a special sort operator for returning a collection’s documents in natural insertion order.
+db.user.actions.find().sort({"$natural": -1});
+
+
+Queryto see all the namespaces defined for the current database:
+> db.system.namespaces.find();
+
+To see a list of indexes:
+> db.system.indexes.find();
+
+
+BSON spec:
+http://bsonspec.org/
