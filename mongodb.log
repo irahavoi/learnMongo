@@ -1,37 +1,88 @@
-2015-06-16T08:53:32.833-0500 [initandlisten] MongoDB starting : pid=8716 port=27017 dbpath=\data\db\ 64-bit host=wpg02333
-2015-06-16T08:53:32.849-0500 [initandlisten] targetMinOS: Windows 7/Windows Server 2008 R2
-2015-06-16T08:53:32.849-0500 [initandlisten] db version v2.6.6
-2015-06-16T08:53:32.849-0500 [initandlisten] git version: 608e8bc319627693b04cc7da29ecc300a5f45a1f
-2015-06-16T08:53:32.849-0500 [initandlisten] build info: windows sys.getwindowsversion(major=6, minor=1, build=7601, platform=2, service_pack='Service Pack 1') BOOST_LIB_VERSION=1_49
-2015-06-16T08:53:32.849-0500 [initandlisten] allocator: system
-2015-06-16T08:53:32.849-0500 [initandlisten] options: { config: "mongod.conf", systemLog: { destination: "file", logAppend: true, path: "mongodb.log" } }
-2015-06-16T08:53:32.849-0500 [initandlisten] exception in initAndListen: 13627 Unable to create/open lock file: \data\db\mongod.lock The process cannot access the file because it is being used by another process.. Is a mongod instance already running?, terminating
-2015-06-16T08:53:32.849-0500 [initandlisten] dbexit: 
-2015-06-16T08:53:32.849-0500 [initandlisten] shutdown: going to close listening sockets...
-2015-06-16T08:53:32.849-0500 [initandlisten] shutdown: going to flush diaglog...
-2015-06-16T08:53:32.849-0500 [initandlisten] shutdown: going to close sockets...
-2015-06-16T08:53:32.849-0500 [initandlisten] shutdown: waiting for fs preallocator...
-2015-06-16T08:53:32.849-0500 [initandlisten] shutdown: lock for final commit...
-2015-06-16T08:53:32.849-0500 [initandlisten] shutdown: final commit...
-2015-06-16T08:53:32.849-0500 [initandlisten] shutdown: closing all files...
-2015-06-16T08:53:32.849-0500 [initandlisten] closeAllFiles() finished
-2015-06-16T08:53:32.849-0500 [initandlisten] dbexit: really exiting now
-2015-06-16T08:53:37.126-0500 ***** SERVER RESTARTED *****
-2015-06-16T08:53:37.141-0500 [initandlisten] MongoDB starting : pid=7960 port=27017 dbpath=\data\db\ 64-bit host=wpg02333
-2015-06-16T08:53:37.141-0500 [initandlisten] targetMinOS: Windows 7/Windows Server 2008 R2
-2015-06-16T08:53:37.141-0500 [initandlisten] db version v2.6.6
-2015-06-16T08:53:37.141-0500 [initandlisten] git version: 608e8bc319627693b04cc7da29ecc300a5f45a1f
-2015-06-16T08:53:37.141-0500 [initandlisten] build info: windows sys.getwindowsversion(major=6, minor=1, build=7601, platform=2, service_pack='Service Pack 1') BOOST_LIB_VERSION=1_49
-2015-06-16T08:53:37.141-0500 [initandlisten] allocator: system
-2015-06-16T08:53:37.141-0500 [initandlisten] options: { config: "mongod.conf", systemLog: { destination: "file", logAppend: true, path: "mongodb.log" } }
-2015-06-16T08:53:37.141-0500 [initandlisten] exception in initAndListen: 13627 Unable to create/open lock file: \data\db\mongod.lock The process cannot access the file because it is being used by another process.. Is a mongod instance already running?, terminating
-2015-06-16T08:53:37.141-0500 [initandlisten] dbexit: 
-2015-06-16T08:53:37.141-0500 [initandlisten] shutdown: going to close listening sockets...
-2015-06-16T08:53:37.141-0500 [initandlisten] shutdown: going to flush diaglog...
-2015-06-16T08:53:37.141-0500 [initandlisten] shutdown: going to close sockets...
-2015-06-16T08:53:37.141-0500 [initandlisten] shutdown: waiting for fs preallocator...
-2015-06-16T08:53:37.141-0500 [initandlisten] shutdown: lock for final commit...
-2015-06-16T08:53:37.141-0500 [initandlisten] shutdown: final commit...
-2015-06-16T08:53:37.141-0500 [initandlisten] shutdown: closing all files...
-2015-06-16T08:53:37.141-0500 [initandlisten] closeAllFiles() finished
-2015-06-16T08:53:37.141-0500 [initandlisten] dbexit: really exiting now
+2015-06-16T08:57:49.805-0500 [initandlisten] MongoDB starting : pid=8536 port=27017 dbpath=\data\db\ 64-bit host=wpg02333
+2015-06-16T08:57:49.805-0500 [initandlisten] targetMinOS: Windows 7/Windows Server 2008 R2
+2015-06-16T08:57:49.805-0500 [initandlisten] db version v2.6.6
+2015-06-16T08:57:49.805-0500 [initandlisten] git version: 608e8bc319627693b04cc7da29ecc300a5f45a1f
+2015-06-16T08:57:49.805-0500 [initandlisten] build info: windows sys.getwindowsversion(major=6, minor=1, build=7601, platform=2, service_pack='Service Pack 1') BOOST_LIB_VERSION=1_49
+2015-06-16T08:57:49.805-0500 [initandlisten] allocator: system
+2015-06-16T08:57:49.805-0500 [initandlisten] options: { config: "mongod.conf", systemLog: { destination: "file", logAppend: true, path: "mongodb.log" } }
+2015-06-16T08:57:49.805-0500 [initandlisten] exception in initAndListen: 13627 Unable to create/open lock file: \data\db\mongod.lock The process cannot access the file because it is being used by another process.. Is a mongod instance already running?, terminating
+2015-06-16T08:57:49.805-0500 [initandlisten] dbexit: 
+2015-06-16T08:57:49.805-0500 [initandlisten] shutdown: going to close listening sockets...
+2015-06-16T08:57:49.805-0500 [initandlisten] shutdown: going to flush diaglog...
+2015-06-16T08:57:49.805-0500 [initandlisten] shutdown: going to close sockets...
+2015-06-16T08:57:49.805-0500 [initandlisten] shutdown: waiting for fs preallocator...
+2015-06-16T08:57:49.805-0500 [initandlisten] shutdown: lock for final commit...
+2015-06-16T08:57:49.805-0500 [initandlisten] shutdown: final commit...
+2015-06-16T08:57:49.805-0500 [initandlisten] shutdown: closing all files...
+2015-06-16T08:57:49.805-0500 [initandlisten] closeAllFiles() finished
+2015-06-16T08:57:49.805-0500 [initandlisten] dbexit: really exiting now
+2015-06-16T09:15:41.589-0500 ***** SERVER RESTARTED *****
+2015-06-16T09:15:41.599-0500 [initandlisten] MongoDB starting : pid=2520 port=27017 dbpath=\data\db\ 64-bit host=wpg02333
+2015-06-16T09:15:41.599-0500 [initandlisten] targetMinOS: Windows 7/Windows Server 2008 R2
+2015-06-16T09:15:41.599-0500 [initandlisten] db version v2.6.6
+2015-06-16T09:15:41.599-0500 [initandlisten] git version: 608e8bc319627693b04cc7da29ecc300a5f45a1f
+2015-06-16T09:15:41.599-0500 [initandlisten] build info: windows sys.getwindowsversion(major=6, minor=1, build=7601, platform=2, service_pack='Service Pack 1') BOOST_LIB_VERSION=1_49
+2015-06-16T09:15:41.599-0500 [initandlisten] allocator: system
+2015-06-16T09:15:41.599-0500 [initandlisten] options: { config: "mongod.conf", systemLog: { destination: "file", logAppend: true, path: "mongodb.log" } }
+2015-06-16T09:15:41.607-0500 [initandlisten] journal dir=\data\db\journal
+2015-06-16T09:15:41.607-0500 [initandlisten] recover : no journal files present, no recovery needed
+2015-06-16T09:15:41.648-0500 [initandlisten] waiting for connections on port 27017
+2015-06-16T09:16:41.653-0500 [clientcursormon] mem (MB) res:150 virt:5265
+2015-06-16T09:16:41.653-0500 [clientcursormon]  mapped (incl journal view):5120
+2015-06-16T09:16:41.653-0500 [clientcursormon]  connections:0
+2015-06-16T09:16:47.946-0500 [initandlisten] connection accepted from 127.0.0.1:58612 #1 (1 connection now open)
+2015-06-16T09:17:09.461-0500 [conn1] query stocks.values query: { query: { stock_symbol: "GOOG" }, orderby: { date: -1.0 } } planSummary: COLLSCAN, COLLSCAN ntoreturn:1 ntoskip:0 nscanned:4308303 nscannedObjects:4308303 keyUpdates:0 numYields:34713 locks(micros) r:5026827 nreturned:1 reslen:194 2623ms
+2015-06-16T09:17:41.664-0500 [clientcursormon] mem (MB) res:1204 virt:5264
+2015-06-16T09:17:41.664-0500 [clientcursormon]  mapped (incl journal view):5120
+2015-06-16T09:17:41.664-0500 [clientcursormon]  connections:1
+2015-06-16T09:18:14.544-0500 [conn1] query stocks.values query: { query: { stock_symbol: "GOOG" }, orderby: { date: -1.0 } } planSummary: COLLSCAN, COLLSCAN ntoreturn:1 ntoskip:0 nscanned:4308303 nscannedObjects:4308303 keyUpdates:0 numYields:2 locks(micros) r:3613523 nreturned:1 reslen:194 2251ms
+2015-06-16T09:22:41.725-0500 [clientcursormon] mem (MB) res:1204 virt:5264
+2015-06-16T09:22:41.725-0500 [clientcursormon]  mapped (incl journal view):5120
+2015-06-16T09:22:41.725-0500 [clientcursormon]  connections:1
+2015-06-16T09:27:42.229-0500 [clientcursormon] mem (MB) res:1204 virt:5264
+2015-06-16T09:27:42.229-0500 [clientcursormon]  mapped (incl journal view):5120
+2015-06-16T09:27:42.229-0500 [clientcursormon]  connections:1
+2015-06-16T09:28:15.768-0500 [conn1] creating profile collection: stocks.system.profile
+2015-06-16T09:30:12.869-0500 [conn1] query stocks.values query: { query: {}, orderby: { close: -1.0 } } planSummary: COLLSCAN, COLLSCAN ntoreturn:1 ntoskip:0 nscanned:4308303 nscannedObjects:4308303 keyUpdates:0 numYields:11 locks(micros) r:34262849 nreturned:1 reslen:194 17528ms
+2015-06-16T09:32:42.838-0500 [clientcursormon] mem (MB) res:737 virt:5264
+2015-06-16T09:32:42.838-0500 [clientcursormon]  mapped (incl journal view):5120
+2015-06-16T09:32:42.838-0500 [clientcursormon]  connections:1
+2015-06-16T09:34:20.638-0500 [conn1] end connection 127.0.0.1:58612 (0 connections now open)
+2015-06-16T09:34:23.955-0500 [initandlisten] connection accepted from 127.0.0.1:58733 #2 (1 connection now open)
+2015-06-16T09:34:56.834-0500 Ctrl-C signal
+2015-06-16T09:34:56.834-0500 [consoleTerminate] got CTRL_C_EVENT, will terminate after current cmd ends
+2015-06-16T09:34:56.834-0500 [consoleTerminate] now exiting
+2015-06-16T09:34:56.834-0500 [consoleTerminate] dbexit: 
+2015-06-16T09:34:56.834-0500 [consoleTerminate] shutdown: going to close listening sockets...
+2015-06-16T09:34:56.834-0500 [consoleTerminate] closing listening socket: 488
+2015-06-16T09:34:56.834-0500 [consoleTerminate] shutdown: going to flush diaglog...
+2015-06-16T09:34:56.834-0500 [consoleTerminate] shutdown: going to close sockets...
+2015-06-16T09:34:56.834-0500 [consoleTerminate] shutdown: waiting for fs preallocator...
+2015-06-16T09:34:56.834-0500 [consoleTerminate] shutdown: lock for final commit...
+2015-06-16T09:34:56.834-0500 [consoleTerminate] shutdown: final commit...
+2015-06-16T09:34:56.834-0500 [conn2] end connection 127.0.0.1:58733 (0 connections now open)
+2015-06-16T09:34:56.897-0500 [consoleTerminate] shutdown: closing all files...
+2015-06-16T09:34:56.944-0500 [consoleTerminate] closeAllFiles() finished
+2015-06-16T09:34:56.944-0500 [consoleTerminate] journalCleanup...
+2015-06-16T09:34:56.944-0500 [consoleTerminate] removeJournalFiles
+2015-06-16T09:34:56.944-0500 [consoleTerminate] shutdown: removing fs lock...
+2015-06-16T09:34:56.944-0500 [consoleTerminate] dbexit: really exiting now
+2015-06-16T09:35:05.545-0500 ***** SERVER RESTARTED *****
+2015-06-16T09:35:05.561-0500 [initandlisten] MongoDB starting : pid=6772 port=27017 dbpath=\data\db\ 64-bit host=wpg02333
+2015-06-16T09:35:05.561-0500 [initandlisten] targetMinOS: Windows 7/Windows Server 2008 R2
+2015-06-16T09:35:05.561-0500 [initandlisten] db version v2.6.6
+2015-06-16T09:35:05.561-0500 [initandlisten] git version: 608e8bc319627693b04cc7da29ecc300a5f45a1f
+2015-06-16T09:35:05.561-0500 [initandlisten] build info: windows sys.getwindowsversion(major=6, minor=1, build=7601, platform=2, service_pack='Service Pack 1') BOOST_LIB_VERSION=1_49
+2015-06-16T09:35:05.561-0500 [initandlisten] allocator: system
+2015-06-16T09:35:05.561-0500 [initandlisten] options: { config: "mongod.conf", systemLog: { destination: "file", logAppend: true, path: "mongodb.log" } }
+2015-06-16T09:35:05.577-0500 [initandlisten] journal dir=\data\db\journal
+2015-06-16T09:35:05.577-0500 [initandlisten] recover : no journal files present, no recovery needed
+2015-06-16T09:35:05.608-0500 [initandlisten] waiting for connections on port 27017
+2015-06-16T09:35:11.488-0500 [initandlisten] connection accepted from 127.0.0.1:58734 #1 (1 connection now open)
+2015-06-16T09:36:05.745-0500 [clientcursormon] mem (MB) res:212 virt:5266
+2015-06-16T09:36:05.745-0500 [clientcursormon]  mapped (incl journal view):5120
+2015-06-16T09:36:05.745-0500 [clientcursormon]  connections:1
+2015-06-16T09:36:22.404-0500 [conn1] query stocks.values query: { query: {}, orderby: { close: -1.0 } } planSummary: COLLSCAN, COLLSCAN ntoreturn:1 ntoskip:0 nscanned:4308303 nscannedObjects:4308303 keyUpdates:0 numYields:13 locks(micros) r:34810780 nreturned:1 reslen:194 17719ms
+2015-06-16T09:37:05.898-0500 [clientcursormon] mem (MB) res:736 virt:5264
+2015-06-16T09:37:05.898-0500 [clientcursormon]  mapped (incl journal view):5120
+2015-06-16T09:37:05.898-0500 [clientcursormon]  connections:1

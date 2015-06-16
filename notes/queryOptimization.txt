@@ -7,3 +7,35 @@ assumption ingrained, since it prints a warning whenever any operation, includin
 query, takes more than 100 ms. The logs, therefore, are the first place you should look
 for slow queries.
 
+Starting mongo with config params
+mongod --config path/to/mongod.conf
+
+Cull information about long queries from mongo log file:
+grep -E '([0-9])+ms' mongodb.log
+
+If 100 ms is too high a threshold, you can lower it with the --slowms server option. If
+you define slow as taking longer than 50 ms, then start mongod with --slowms 50.
+
+-------------------------Using Mongo DB Query Profiler-------------------------------------
+Profiler is disabled by default.
+To enable:
+use your_db
+db.setProfilingLevel(2)
+
+2 - is the most verbose level it directs the profiler to log every read and write.
+A couple other options are available.
+To log only slow (100 ms) operations, set the profiling level to 1. To disable the query
+profiler altogether, set it to 0. And to log only operations taking longer than a certain
+threshold in milliseconds, pass the number of milliseconds as the second argument
+like this:
+
+db.setProfilingLevel(1, 50)
+
+The profiling results are stored in a special capped collection called system.profile.
+You can query system.profile as you would any capped collection. For instance,
+you can find all queries that took longer than 150 ms like so:
+
+db.system.profile.find({millis: {$gt: 150}})
+
+----------------Examining slow queries------------------------------------
+Understanding Explain()
