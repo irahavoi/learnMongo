@@ -1,0 +1,9 @@
+Identifying slow queries:
+Though the requirements will vary per application, it’s safe to assume that for most apps, queries
+shouldn’t take much longer than 100 milliseconds.
+
+The MongoDB logger has this
+assumption ingrained, since it prints a warning whenever any operation, including a
+query, takes more than 100 ms. The logs, therefore, are the first place you should look
+for slow queries.
+

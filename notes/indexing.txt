@@ -1,0 +1,168 @@
+Keep in
+mind that the database will use a single index per query and that if you’re
+going to be querying on more than one field, ensure that a compound index
+for those fields exists.
+
+Rules:
+1 Indexes significantly reduce the amount of work required to fetch documents.
+Without the proper indexes, the only way to satisfy a query is to scan all documents
+linearly until the query conditions are met. This frequently means scanning
+entire collections.
+2 Only one single-key index will be used to resolve a query.1 For queries containing
+multiple keys (say, ingredient and recipe name), a compound index containing
+those keys will best resolve the query.
+3 An index on ingredients can and should be eliminated if you have a second
+index on ingredient-cuisine. More generally, if you have a compound index
+on a-b, then a second index on a alone will be redundant.2
+4 The order of keys in a compound index matters.
+
+Core Indexing Concepts:
+Single Key indexes - each entry in the index corresponds to a single value from
+                     each of the documents indexed.
+                     The default index on _id is a good example of a
+                     single-key index. Because this field is indexed, each document’s _id also lives in an
+                     index for fast retrieval by that field.
+
+Compound-Key Indexes - If you issue a query with single-key indexes on 2 different fields,
+                     only one of these will be used. The query optimizer will pick the more efficient of the two, but neither will give
+                     you an ideal result.
+                     A compound index is a single index where each entry is composed of more than one key.
+
+
+Index efficiency:
+Although indexes are essential for good query performance, each new index imposes a small maintenance cost.
+
+Even with all the right indexes in place, it’s still possible that those indexes won’t result in faster queries. This occurs when
+indexes and a working data set don’t fit in RAM.
+
+In the worst case, as data size becomes much larger than available RAM, a situation can occur where, for
+any read or write, data must be paged to and from disk. This is known as thrashing, and
+it causes performance to take a severe dive.
+
+With extra indexes in place, more RAM will be
+required to maintain those indexes. Along the same lines, each index should have
+only the keys it needs: a triple-key compound index might be necessary at times, but
+be aware that it’ll use more space than a simple single-key index.
+
+Ideally, indexes and a working data set fit in RAM.
+
+
+------------------------ Index types: ------------------------------
+
+Unique Index:
+ db.users.ensureIndex({username: 1}, {unique: true})
+
+If you need a unique index on a collection, it’s usually best to create the index
+before inserting any data. If you create the index in advance, you guarantee the uniqueness
+constraint from the start. When creating a unique index on a collection that
+already contains data, you run the risk of failure since it’s possible that duplicate keys
+may already exist in the collection. When duplicate keys exist, the index creation fails.
+
+if the data isn’t so important, you can also instruct the database to
+drop documents with duplicate keys automatically using the dropDups option:
+
+db.users.ensureIndex({username: 1}, {unique: true, dropDups: true})
+
+SPARSE INDEXES
+But there are two cases where a dense index is undesirable. The first is when you
+want a unique index on a field that doesn’t appear in every document in the collection.
+For instance, you definitely want a unique index on every product’s sku field. But suppose
+that, for some reason, products are entered into the system before a sku is
+assigned. If you have a unique index on sku and attempt to insert more than one product
+without a sku, then the first insert will succeed, but all subsequent inserts will fail
+because there will already be an entry in the index where sku is null. This is a case
+where a dense index doesn’t serve your purpose. What you want instead is a sparse index.
+In a sparse index, only those documents having some value for the indexed key will
+appear. If you want to create a sparse index, all you have to do is specify {sparse:
+true}
+
+db.products.ensureIndex({sku: 1}, {unique: true, sparse: true})
+
+There’s another case where a sparse index is desirable: when a large number of documents
+in a collection don’t contain the indexed key. For example, suppose you
+allowed anonymous reviews on your e-commerce site. In this case, half the reviews
+might lack a user_id field, and if that field were indexed, then half the entries in that
+index would be null. This would be inefficient for two reasons. First, it would increase
+the size of the index. Second, it would require updates to the index when adding and
+removing documents with null user_id fields.
+
+MULTIKEY INDEXES
+Multikey Index allows multiple entries in the index to reference the same document.
+
+Multikey indexes are always enabled in MongoDB. Anytime an indexed field contains
+an array, each array value will be given its own entry in the index.
+
+------------------------------Index administration------------------------------------
+Deletion:
+db.runCommand({deleteIndexes: "users", index: "zip"})
+
+or
+
+db.users.dropIndex("zip_1")
+
+Building Indexes:
+For large data sets, building an index can take hours, even days. But you can monitor
+the progress of an index build from the MongoDB logs.
+
+
+db.values.ensureIndex({open: 1, close: 1})
+
+BE CAREFUL DECLARING INDEXES Because it’s so easy to declare indexes, it’s
+also easy to inadvertently trigger an index build. If the data set is large
+enough, then the build will take a long time. And in a production situation,
+this can be a nightmare since there’s no easy way to kill an index build. If this
+ever happens to you, you’ll have to fail over to a secondary node—if you have
+one. But the most prudent advice is to treat an index build as a kind of database
+migration, and ensure that your application code never declares indexes
+automatically.
+
+The index builds in two steps. In the first step, the values to be indexed are sorted. A
+sorted data set makes for a much more efficient insertion into the B-tree. Note that
+the progress of the sort is indicated by the ratio of the number of documents sorted to
+the total number of documents
+
+For step two, the sorted values are inserted into the index. Progress is indicated in the
+same way, and when complete, the time it took to complete the index build is indicated
+as the insert time into system.indexes
+
+In addition to examining the MongoDB log, you can check the index build progress
+by running the shell’s currentOp() method
+
+
+Background indexing
+If you’re running in production and can’t afford to halt access to the database, you
+can specify that an index be built in the background. Although the index build will
+still take a write lock, the job will yield to allow other readers and writers to access the
+database.
+
+If your application typically exerts a heavy load on MongoDB, then a background
+index build will degrade performance, but this may be acceptable under certain
+circumstances. For example, if you know that the index can be built within a time
+window where application traffic is at a minimum, then background indexing in this
+case might be a good choice.
+
+To build an index in the background, specify {background: true} when you
+declare the index.
+
+db.values.ensureIndex({open: 1, close: 1}, {background: true})
+
+Offline indexing
+If your production data set is too large to be indexed within a few hours, then you’ll
+need to make alternate plans. This will usually involve taking a replica node offline,
+building the index on that node by itself, and then allowing the node to catch up with
+the master replica. Once it’s caught up, you can promote the node to primary and
+then take another secondary offline and build its version of the index.
+
+Compacting:
+If your application heavily updates existing data, or performs a lot of large deletions,
+then you may end up with a highly fragmented index. B-trees will coalesce on their
+own somewhat, but this isn’t always sufficient to offset a high delete volume. The primary
+symptom of a fragmented index is an index size much larger than you’d expect
+for the given data size. This fragmented state can result in indexes using more RAM
+than necessary. In these cases, you may want to consider rebuilding one or more
+indexes. You can do this by dropping and recreating individual indexes or by running
+the reIndex command, which will rebuild all indexes for a given collection:
+db.values.reIndex();
+Be careful about reindexing: the command will take out a write lock for the duration
+of the rebuild, temporarily rendering your MongoDB instance unusable. Reindexing
+is best done offline, as described earlier for building indexes on a secondary
