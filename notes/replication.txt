@@ -1,0 +1,333 @@
+MongoDB provides two flavors of replication: master-slave replication and replica sets.
+
+For both, a single primary node receives all writes, and then all secondary
+nodes read and apply those writes to themselves asynchronously.
+
+Master-slave replication and replica sets use the same replication mechanism, but
+replica sets additionally ensure automated failover: if the primary node goes offline
+for any reason, then one of the secondary nodes will automatically be promoted to
+primary, if possible.
+
+The only time you should opt for MongoDB’s master-slave replication is when you’d require more than 11
+slave nodes, since a replica set can have no more than 12 members.
+
+When running without journaling enabled,
+MongoDB’s data files aren’t guaranteed to be free of corruption in the event of an
+unclean shutdown. Without journaling, replication must always be run to guarantee a
+clean copy of the data files if a single node shuts down hard.
+
+Of course, replication is desirable even when running with journaling. After all,
+you still want high availability and fast failover.
+In this case, journaling expedites recovery
+because it allows you to bring failed nodes back online simply by replaying the
+journal. This is much faster than resyncing from an existing replica or copying a replica’s
+data files manually.
+
+Because replication is asynchronous, any sort of network latency or partition
+between nodes will have no affect on the performance of the primary.
+
+As another
+form of redundancy, replicated nodes can also be delayed by a constant number of
+seconds behind the primary. This provides insurance against the case where a user
+inadvertently drops a collection or an application somehow corrupts the database.
+
+Normally, these operations will be replicated immediately; a delayed replica gives
+administrators time to react and possibly save their data.
+
+It’s important to note that although they’re redundant, replicas aren’t a replacement
+for backups. A backup represents a snapshot of the database at a particular time
+in the past, whereas a replica is always up to date.
+
+For example, it’s common practice to run backups against a secondary node
+to keep unnecessary load off the primary and to avoid downtime. Another example
+involves building large indexes. Because index builds are expensive, you may opt to
+build on a secondary node first, swap the secondary with the existing primary, and
+then build again on the new secondary.
+
+Finally, replication allows you to balance reads across replicas. For applications
+whose workloads are overwhelmingly read-heavy, this is the easiest way to scale
+MongoDB. But for all its promise, scaling reads with secondaries isn’t practical if any
+of the following apply:
+
+* The allotted hardware can’t process the given workload
+* The ratio of writes to reads exceeds 50%.
+* The application requires consistent reads.
+
+If you need to scale and any of the preceding conditions apply, then you’ll need a different strategy,
+involving sharding, augmented hardware, or some combination of the two.
+
+Replica sets are a refinement on master-slave replication, and they’re the recommended
+MongoDB replication strategy.
+
+The minimum recommended replica set configuration consists of three nodes. Two of
+these nodes serve as first-class, persistent mongod instances. Either can act as the replica
+set primary, and both have a full copy of the data. The third node in the set is an
+arbiter, which doesn’t replicate data, but merely acts as a kind of neutral observer. As
+the name suggests, the arbiter arbitrates: when failover is required, the arbiter helps
+to elect a new primary node.
+
+Start by creating a data directory for each replica set member:
+$ mkdir /data/node1
+$ mkdir /data/node2
+$ mkdir /data/arbiter
+
+Next, start each member as a separate mongod
+
+$ mongod --replSet myapp --dbpath /data/node1 --port 40000
+$ mongod --replSet myapp --dbpath /data/node2 --port 40001
+$ mongod --replSet myapp --dbpath /data/arbiter --port 40002
+
+If you examine the mongod log output, the first thing you’ll notice are error messages
+saying that the configuration can’t be found.
+
+Connect to the non-arbiter node:
+$ mongo --port 4000
+
+run the rs.initiate() command:
+$ rs.initiate()
+
+You can now add the
+other two other members using rs.add():
+
+$ rs.add("host:40001")
+$ rs.add("host:40002", {arbiterOnly:true})
+
+To get a brief summary of the replica set status, run:
+$ db.isMaster()
+
+Result:
+{
+    "setName" : "myapp",
+    "setVersion" : 3,
+    "ismaster" : true,
+    "secondary" : false,
+    "hosts" : [
+            "host:40000",
+            "host:40001"
+    ],
+    "arbiters" : [
+            "host:40002"
+    ],
+    "primary" : "host:40000",
+    "me" : "host:40000",
+    "maxBsonObjectSize" : 16777216,
+    "maxMessageSizeBytes" : 48000000,
+    "maxWriteBatchSize" : 1000,
+    "localTime" : ISODate("2015-06-16T16:43:47.347Z"),
+    "maxWireVersion" : 2,
+    "minWireVersion" : 0,
+    "ok" : 1
+}
+
+In order to enable reads from secondary node, run:
+rs.slaveOk()
+
+
+Shutdown the node to which you've connected:
+db.shutdownServer()
+
+Once you’ve killed the primary, note that the secondary detects the lapse in the
+primary’s heartbeat. The secondary then elects itself primary. This election is possible
+because a majority of the original nodes (the arbiter and the original secondary) are
+still able to ping each other.
+
+
+---------------------Working with oplog------------------------------
+$ use local
+$ db.oplog.rs.find({op:"i"})
+
+
+
+HEARTBEAT AND FAILOVER
+The replica set heartbeat facilitates election and failover. By default, each replica set
+member pings all the other members every two seconds. When you run rs.status(), you see the timestamp of each
+node’s last heartbeat along with its state of health
+
+Therefore, when the primary can’t see a majority, it must step down.
+
+---------------------Commit and Rollback ---------------------------
+Suppose you issue a series of writes to
+the primary that don’t get replicated to the secondary for some reason (connectivity
+issues, secondary is down for backup, secondary is lagging, and so forth). Now suppose
+further that the secondary is suddenly promoted to primary. You write to the new
+primary, and eventually the old primary comes back online and tries to replicate from
+the new primary. The problem here is that the old primary has a series of writes that
+don’t exist in the new primary’s oplog. This situation triggers a rollback.
+
+In a rollback, all writes that were never replicated to a majority are undone.
+
+For each collection with rolled-back writes, a separate BSON file will be created
+whose filename includes the time of the rollback. In the event that you need to
+restore the reverted documents, you can examine these BSON files using the bsondump
+utility and manually restore them, possibly using mongorestore.
+
+
+
+------------ Configuration Document Options -------------------------------
+_id(required)—A unique incrementing integer representing the member’s ID.
+These _id values begin at 0 and must be incremented by one for each member
+added.
+ host(required)—A string storing the host name of this member along with an
+optional port number. If the port is provided, it should be separated from the
+host name by a colon (for example, arete:30000). If no port number is specified,
+the default port, 27017, will be used.
+ arbiterOnly—A Boolean value, true or false, indicating whether this member
+is an arbiter. Arbiters store configuration data only. They’re lightweight
+members that participate in primary election but not in the replication itself.
+ priority—An integer from 0 to 1000 that helps to determine the likelihood
+that this node will be elected primary. For both replica set initiation and
+failover, the set will attempt to elect as primary the node with the highest priority,
+as long as it’s up to date.
+There are also cases where you might want a node never to be primary (say, a
+disaster recovery node residing in a secondary data center). In those cases, set
+the priority to 0. Nodes with a priority of 0 will be marked as passive in the
+results to the isMaster() command and will never be elected primary.
+ votes—All replica set members get one vote by default. The votes setting
+allows you to give more than one vote to an individual member.
+This option should be used with extreme care, if at all. For one thing, it’s difficult
+to reason about replica set failover behavior when not all members have
+the same number of votes. Moreover, the vast majority of production deployments
+will be perfectly well served with one vote per member. So if you do
+choose to alter the number of votes for a given member, be sure to think
+through and simulate the various failure scenarios very carefully.
+
+hidden—A Boolean value that, when true, will keep this member from showing
+up in the responses generated by the isMaster command. Because the
+MongoDB drivers rely on isMaster for knowledge of the replica set topology,
+hiding a member keeps the drivers from automatically accessing it. This setting
+can be used in conjunction with buildIndexes and must be used with
+slaveDelay.
+ buildIndexes—A Boolean value, defaulting to true, that determines whether
+this member will build indexes. You’ll want to set this value to false only on
+members that will never become primary (those with a priority of 0).
+This option was designed for nodes used solely as backups. If backing up
+indexes is important, then you shouldn’t use this option.
+ slaveDelay—The number of seconds that a given secondary should lag behind
+the primary. This option can be used only with nodes that will never become primary.
+So to specify a slaveDelay greater than 0, be sure to also set a priority of 0.
+You can use a delayed slave as insurance against certain kinds of user errors.
+For example, if you have a secondary delayed by 30 minutes and an administrator
+accidentally drops a database, then you have 30 minutes to react to this
+event before it’s propagated.
+ tags—A document containing an arbitrary set of key-value pairs, usually used
+to identify this member’s location in a particular data center or server rack.
+Tags are used for specifying granular write concern and read settings, and
+
+
+
+REPLICA SET STATUS
+You can see the status of a replica set and its members by running the replSetGet-
+Status command.
+To invoke this command from the shell, run the rs.status() helper method:
+
+$ rs.status()
+
+Replica set status codes:
+0 STARTUP Indicates that the replica set is negotiating with other nodes by pinging
+all set members and sharing config data.
+1 PRIMARY This is the primary node. A replica set will always have at most one primary
+node.
+2 SECONDARY This is a secondary, read-only node. This node may become a primary in
+the event of a failover if and only if its priority is greater than 0 and it’s
+not marked as hidden.
+3 RECOVERING This node is unavailable for reading and writing. You usually see this
+state after a failover or upon adding a new node. While recovering, a
+data file sync is often in progress; you can verify this by examine the
+recovering node’s logs.
+4 FATAL A network connection is still established, but the node isn’t responding
+to pings. This usually indicates a fatal error on the machine hosting the
+node marked FATAL.
+5 STARTUP2 An initial data file sync is in progress.
+6 UNKNOWN A network connection has yet to be made.
+7 ARBITER This node is an arbiter.
+8 DOWN The node was accessible and stable at some point but isn’t currently
+responding to heartbeat pings.
+9 ROLLBACK A rollback is in progress.
+
+
+------------------- Deployment Strategies ------------------------------------------
+Replica sets can consist of up to 12 nodes.
+The most minimal replica set configuration providing automated failover is the
+one consisting of two replicas and one arbiter.
+
+In production, the arbiter can run on an application server while each replica gets its own machine.
+
+But for applications where uptime is critical, you’ll want a replica set consisting of
+three complete replicas. What does the extra replica buy you? Think of the scenario
+where a single node fails completely. You still have two first-class nodes available while
+you restore the third. As long as a third node is online and recovering (which may
+take hours), the replica set can still fail over automatically to an up-to-date node.
+Some applications will require the redundancy afforded by two data centers, and
+the three-member replica set can also work in this case. The trick is to use one of the
+data centers for disaster recovery only. Figure 8.2 shows an example of this. Here, the
+primary data center houses a replica set primary and secondary, and a backup data
+center keeps the remaining secondary as a passive node (with priority 0).
+
+
+
+--------------------------- Replica set connections ---------------------------------------
+You can connect to any replica set member individually, but you’ll normally want to connect
+to the replica set as a whole. This allows the driver to figure out which node is primary
+and, in the case of failover, reconnect to whichever node becomes the new
+primary.
+
+Most of the officially supported drivers provide ways of connecting to a replica set.
+In Ruby, you connect by creating a new instance of ReplSetConnection, passing in a
+list of seed nodes:
+
+Mongo::ReplSetConnection.new(['hostname', 40000], ['hostname', 40001])
+
+Internally, the driver will attempt to connect to each seed node and then call the
+isMaster command.
+
+If an operation on the primary fails, then on subsequent requests, the
+driver can attempt to connect to one of the remaining nodes until it can reconnect to
+a primary.
+
+It’s important to keep in mind that although replica set failover is automatic, the
+drivers don’t attempt to hide the fact that a failover has occurred. The course of
+events goes something like this: First, the primary fails or a new election takes place.
+Subsequent requests will reveal that the socket connection has been broken, and the
+driver will then raise a connection exception and close any open sockets to the database.
+It’s now up to the application developer to decide what happens next, and this
+decision will depend on both the operation being performed and the specific needs
+of the application.
+
+-------------------- Read Scaling -----------------------------------------------
+Replicated databases are great for read scaling. If a single server can’t handle the
+application’s read load, then you have the option to route queries to more than one
+replica.
+
+Most of the drivers have built-in support for sending queries to secondary
+nodes.
+
+When the Java driver is connected to a replica set, setting slaveOk to true will
+enable secondary load balancing on a per-thread basis.
+
+Many MongoDB users scale with replication in production. But there are three
+cases where this sort of scaling won’t be sufficient. The first concerns the number of
+servers needed. As of MongoDB v2.0, replica sets support a maximum of 12 members,
+7 of which can vote. If you need even more replicas for scaling, you can use master-slave
+replication. But if you don’t want to sacrifice automated failover and you need to scale
+beyond the replica set maximum, then you’ll need to migrate to a sharded cluster.
+The second case involves applications with a high write load. As mentioned at the
+beginning of the chapter, secondaries must keep up with this write load. Sending
+reads to write-laden secondaries may inhibit replication.
+A third situation that replica scaling can’t handle is consistent reads. Because replication
+is asynchronous, replicas aren’t always going to reflect the latest writes to the
+primary. Therefore, if your application reads arbitrarily from secondaries, then the
+picture presented to end users isn’t always guaranteed to be fully consistent. For applications
+whose main purpose is to display content, this almost never presents a problem.
+But other apps, where users are actively manipulating data, will require
+consistent reads. In these cases, you have two options. The first is to separate the parts
+of the application that need consistent reads from the parts that don’t. The former
+can always be read from the primary, and the latter can be distributed to secondaries.
+When this strategy is either too complicated or simply doesn’t scale, sharding is the
+way to go.
+
+
+
+
+
+
+
