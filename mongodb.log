@@ -86,3 +86,51 @@
 2015-06-16T09:37:05.898-0500 [clientcursormon] mem (MB) res:736 virt:5264
 2015-06-16T09:37:05.898-0500 [clientcursormon]  mapped (incl journal view):5120
 2015-06-16T09:37:05.898-0500 [clientcursormon]  connections:1
+2015-06-16T09:42:06.519-0500 [clientcursormon] mem (MB) res:736 virt:5264
+2015-06-16T09:42:06.519-0500 [clientcursormon]  mapped (incl journal view):5120
+2015-06-16T09:42:06.519-0500 [clientcursormon]  connections:1
+2015-06-16T09:43:30.049-0500 [conn1] query stocks.values query: { query: {}, orderby: { close: -1.0 }, $explain: true } planSummary: COLLSCAN, COLLSCAN ntoskip:0 nscanned:4308303 nscannedObjects:4308303 keyUpdates:0 numYields:12 locks(micros) r:34904471 nreturned:1 reslen:1885 17688ms
+2015-06-16T09:47:07.073-0500 [clientcursormon] mem (MB) res:736 virt:5264
+2015-06-16T09:47:07.073-0500 [clientcursormon]  mapped (incl journal view):5120
+2015-06-16T09:47:07.073-0500 [clientcursormon]  connections:1
+2015-06-16T09:48:42.017-0500 [conn1] build index on: stocks.values properties: { v: 1, key: { close: 1.0 }, name: "close_1", ns: "stocks.values" }
+2015-06-16T09:48:42.033-0500 [conn1] 	 building index using bulk method
+2015-06-16T09:48:45.002-0500 [conn1] 		Index Build: 1403500/4308303	32%
+2015-06-16T09:48:57.524-0500 [conn1] 		Index Build: 2688700/4308303	62%
+2015-06-16T09:49:00.003-0500 [conn1] 		Index Build: 3876400/4308303	89%
+2015-06-16T09:49:09.733-0500 [conn1] build index done.  scanned 4308303 total records. 27.706 secs
+2015-06-16T09:49:09.864-0500 [conn1] command stocks.$cmd command: createIndexes { createIndexes: "values", indexes: [ { key: { close: 1.0 }, name: "close_1" } ] } keyUpdates:0 numYields:0 locks(micros) r:36 w:27833685 reslen:113 27834ms
+2015-06-16T09:49:33.904-0500 [clientcursormon] mem (MB) res:901 virt:5634
+2015-06-16T09:49:33.904-0500 [clientcursormon]  mapped (incl journal view):5120
+2015-06-16T09:49:33.904-0500 [clientcursormon]  connections:1
+2015-06-16T09:54:34.460-0500 [clientcursormon] mem (MB) res:901 virt:5634
+2015-06-16T09:54:34.460-0500 [clientcursormon]  mapped (incl journal view):5120
+2015-06-16T09:54:34.460-0500 [clientcursormon]  connections:1
+2015-06-16T09:59:35.101-0500 [clientcursormon] mem (MB) res:903 virt:5634
+2015-06-16T09:59:35.101-0500 [clientcursormon]  mapped (incl journal view):5120
+2015-06-16T09:59:35.101-0500 [clientcursormon]  connections:1
+2015-06-16T09:59:50.425-0500 [conn1] build index on: stocks.values properties: { v: 1, key: { date: 1.0 }, name: "date_1", ns: "stocks.values" }
+2015-06-16T09:59:50.425-0500 [conn1] 	 building index using bulk method
+2015-06-16T09:59:53.008-0500 [conn1] 		Index Build: 1488000/4308303	34%
+2015-06-16T10:00:01.814-0500 [conn1] 		Index Build: 2279600/4308303	52%
+2015-06-16T10:00:04.002-0500 [conn1] 		Index Build: 3522300/4308303	81%
+2015-06-16T10:00:14.208-0500 [conn1] build index done.  scanned 4308303 total records. 23.782 secs
+2015-06-16T10:00:14.320-0500 [conn1] command stocks.$cmd command: createIndexes { createIndexes: "values", indexes: [ { key: { date: 1.0 }, name: "date_1" } ] } keyUpdates:0 numYields:0 locks(micros) r:37 w:23886382 reslen:113 23886ms
+2015-06-16T10:00:23.611-0500 [conn1] build index on: stocks.values properties: { v: 1, key: { stock_symbol: 1.0 }, name: "stock_symbol_1", ns: "stocks.values" }
+2015-06-16T10:00:23.611-0500 [conn1] 	 building index using bulk method
+2015-06-16T10:00:26.003-0500 [conn1] 		Index Build: 1442100/4308303	33%
+2015-06-16T10:00:32.095-0500 [conn1] 		Index Build: 2618300/4308303	60%
+2015-06-16T10:00:40.323-0500 [conn1] build index done.  scanned 4308303 total records. 16.72 secs
+2015-06-16T10:00:40.459-0500 [conn1] command stocks.$cmd command: createIndexes { createIndexes: "values", indexes: [ { key: { stock_symbol: 1.0 }, name: "stock_symbol_1" } ] } keyUpdates:0 numYields:0 locks(micros) r:40 w:16848791 reslen:113 16848ms
+2015-06-16T10:01:12.503-0500 [clientcursormon] mem (MB) res:1144 virt:5745
+2015-06-16T10:01:12.503-0500 [clientcursormon]  mapped (incl journal view):5120
+2015-06-16T10:01:12.503-0500 [clientcursormon]  connections:1
+2015-06-16T10:06:13.087-0500 [clientcursormon] mem (MB) res:1147 virt:5745
+2015-06-16T10:06:13.087-0500 [clientcursormon]  mapped (incl journal view):5120
+2015-06-16T10:06:13.087-0500 [clientcursormon]  connections:1
+2015-06-16T10:11:13.671-0500 [clientcursormon] mem (MB) res:1147 virt:5745
+2015-06-16T10:11:13.671-0500 [clientcursormon]  mapped (incl journal view):5120
+2015-06-16T10:11:13.671-0500 [clientcursormon]  connections:1
+2015-06-16T10:16:14.207-0500 [clientcursormon] mem (MB) res:1147 virt:5745
+2015-06-16T10:16:14.207-0500 [clientcursormon]  mapped (incl journal view):5120
+2015-06-16T10:16:14.207-0500 [clientcursormon]  connections:1

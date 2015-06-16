@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8bfbbcbf-4176-4218-aa10-219083543fa1" name="Default" comment="">
-      <change type="DELETED" beforePath="C:\work\learnMongo\mongodb.log" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/notes/queryOptimization.txt" afterPath="$PROJECT_DIR$/notes/queryOptimization.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -108,8 +107,8 @@
       <file leaf-file-name="queryOptimization.txt" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/notes/queryOptimization.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.9417808" vertical-offset="147" max-vertical-offset="799">
-              <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.9417808" vertical-offset="2357" max-vertical-offset="3128">
+              <caret line="171" column="0" selection-start-line="171" selection-start-column="0" selection-end-line="171" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -485,12 +484,12 @@
       <workItem from="1434340515510" duration="2384000" />
       <workItem from="1434376278808" duration="16340000" />
       <workItem from="1434399539918" duration="3446000" />
-      <workItem from="1434426974660" duration="6665000" />
+      <workItem from="1434426974660" duration="8817000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="48581000" />
+    <option name="totallyTimeSpent" value="50733000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1920" height="1040" extended-state="0" />
@@ -934,8 +933,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/notes/queryOptimization.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.9417808" vertical-offset="147" max-vertical-offset="799">
-          <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.9417808" vertical-offset="2357" max-vertical-offset="3128">
+          <caret line="171" column="0" selection-start-line="171" selection-start-column="0" selection-end-line="171" selection-end-column="0" />
           <folding />
         </state>
       </provider>

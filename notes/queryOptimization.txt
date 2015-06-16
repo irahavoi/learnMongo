@@ -39,3 +39,140 @@ db.system.profile.find({millis: {$gt: 150}})
 
 ----------------Examining slow queries------------------------------------
 Understanding Explain()
+MongoDB’s explain command provides detailed information about a given query’s path.
+To run explain from the shell, you need only attach the explain() method call:
+
+db.values.find({}).sort({close: -1}).limit(1).explain()
+
+
+Result:
+{
+    "cursor" : "BasicCursor",
+    "isMultiKey" : false,
+    "n" : 1,
+    "nscannedObjects" : 4308303,
+    "nscanned" : 4308303,
+    "scanAndOrder" : true,
+    "indexOnly" : false,
+    "nChunkSkips" : 0,
+    "millis": 15786
+}
+
+n - is a number of returned documents
+nscanned - is a number of scanned documents
+
+In a performant query, n and nscanned should be as close together as possible.
+When doing a collection scan, this is almost never the case.
+The cursor field tells you that you’ve been using a BasicCursor, which only confirms
+that you’re scanning the collection itself and not an index.
+
+A second datum here further explains the slowness of the query: the scanAndOrder
+field. This indicator appears when the query optimizer can’t use an index to return a
+sorted result set. Therefore, in this case, not only does the query engine have to scan
+the collection, it also has to sort the result set manually.
+
+To fix this query, add an index on the close field:
+db.values.ensureIndex({close: 1})
+
+Now instead of 15786 the same query takes less than 1 millisecond to process:
+{
+        "cursor" : "BtreeCursor close_1 reverse",
+        "isMultiKey" : false,
+        "n" : 1,
+        "nscannedObjects" : 1,
+        "nscanned" : 1,
+        "nscannedObjectsAllPlans" : 1,
+        "nscannedAllPlans" : 1,
+        "scanAndOrder" : false,
+        "indexOnly" : false,
+        "nYields" : 0,
+        "nChunkSkips" : 0,
+        "millis" : 0,
+        ...
+}
+
+--------------------- Mongo DB query Optimizer and hint() --------------------------------
+The query optimizer is the piece of software that determines which index, if any, will
+most efficiently serve a given query.
+
+To select an ideal index for your queries, the query optimizer uses a fairly simple set of rules:
+
+1 Avoid scanAndOrder. If the query includes a sort, attempt to sort using an index.
+2 Satisfy all fields with useful indexing constraints—attempt to use indexes for the fields in the query selector.
+3 If the query implies a range or includes a sort, then choose an index where that last key used can help satisfy the range or sort.
+
+If you have 2 indexes (1 for date and 1 for stock_symbol) and your query selects by both these fields,
+then query optimizer will have to choose the most performant index.
+
+When the query is first run, the optimizer creates a
+query plan for each index that might efficiently satisfy the query. The optimizer then
+runs each plan in parallel. The plan that finishes with the lowest value for nscanned
+is declared the winner.
+
+But this shouldn’t hold forever, and it doesn’t. The optimizer automatically expires
+a plan after any of the following events:
+ 100 writes are made to the collection.
+ Indexes are added or removed from the collection.
+ A query using a cached query plan does a lot more work than expected. Here,
+what qualifies as “a lot more work” is a value for nscanned exceeding the cached
+nscanned value by at least a factor of 10.
+
+In order to see all plans and the winner plan, pass true to explain method:
+
+db.values.find({stock_symbol:'GOOG', date:{$gt:'2007-01-01'}}).explain(true)
+
+
+
+----------------------Query Patterns-------------------------------------------
+Single-Key Indexes use scenarios:
+ - exact match
+    db.values.find({close: 100})
+ -a sort on indexed field: sorting
+    db.values.find({}).sort({close: 1})
+ - range queries on the indexed fields:
+    db.values.find({close: {$gte: 100})
+     If you add a sort clause on the same key, the optimizer will still be able to use the same
+     index:
+    db.values.find({close: {$gte: 100}).sort({close: 1})
+
+Compound-Key Indexes scenarios:
+The main thing to remember is that a compound-key index can efficiently serve just a single range or sort per query.
+Let’s imagine a triplecompound key index, again for stock values, on {close: 1, open: 1, date: 1}. Following
+are some possible scenarios.
+
+  - exact match
+      An exact match on the first key, the first and second keys, or the first, second, and
+      third keys, in that order:
+      db.values.find({close: 1})
+      db.values.find({close: 1, open: 1})
+      db.values.find({close: 1, open: 1, date: "1985-01-08"})
+  - range matches
+    An exact match on any set of leftmost keys (including none), followed by either a
+    range or a sort using the next key to the right. Thus, all the following queries are ideal
+    for the triple-key index:
+    db.values.find({}).sort({close: 1})
+    db.values.find({close: {$gt: 1}})
+    db.values.find({close: 100}).sort({open: 1})
+    db.values.find({close: 100, open: {$gt: 1}})
+    db.values.find({close: 1, open: 1.01, date: {$gt: "2005-01-01"}})
+    db.values.find({close: 1, open: 1.01}).sort({date: 1})
+
+Covering indexes - an index can be said to cover a query if all the data required by the query resides in the index itself.
+Covered index queries are also known as index-only queries, since these queries are served without having
+to reference the indexed documents themselves. This can result in increased
+query performance.
+
+Example of an index-only query:
+db.values.find({open: 1}, {open: 1, close: 1, date: 1, _id: 0})
+
+If you run explain() on this query, you’ll see a field labeled indexOnly that’s set to
+true. This indicates that the index, and no actual collection data, was used to serve
+the query.
+
+
+
+
+
+
+
+
