@@ -1,0 +1,82 @@
+MongoDB has been designed to present the same interface to the application before and after sharding.
+
+If an application’s data set continues to grow
+unbounded, then there will come a moment when that data no longer fits in RAM. If
+you’re running on Amazon’s EC2, then you’ll hit that threshold at 68 GB because
+that’s the amount of RAM available on the largest instance at the time of this writing.
+Alternatively, you may run your own hardware with much more than 68 GB of RAM, in
+which case you’ll probably be able to delay sharding for some time. But no machine
+has infinite capacity for RAM; therefore, sharding eventually becomes necessary.
+
+-------------------- Sharding Components ----------------------------
+Shards - Each shard is deployed as a MongoDB replica set, and this set stores some portion of the cluster’s
+         total data. Because each shard is a replica set, each shard has its own replication mechanism
+         and can fail over automatically. You can connect directly to an individual shard
+         just as you would to a standalone replica set. But if you connect to a replica set that’s
+         part of a sharded cluster, you’ll see just a portion of the cluster’s total data.
+
+Mongo Routers - mongos process is a router that directs all reads and writes to the appropriate shard.
+        In this way, mongos provides clients with a coherent view of the system.
+        They typically reside on the same machines as the application servers,
+        ensuring that only one network hop is required.
+        the application connects locally to a mongos,
+        and the mongos manages connections to the individual shards.
+
+
+Config servers - If mongos processes are nonpersistent, then something must durably store the shard
+                 cluster’s canonical state; that’s the job of the config servers
+                 This data includes the global cluster configuration; the
+                 locations of each database, collection, and the particular ranges of data therein; and a
+                 change log preserving a history of the migrations of data across shards.
+
+
+
+------------------------------ Core Sharding Operations -------------
+Sharding a collection
+This means that every document in a sharded
+collection must fall within some range of values for a given key. MongoDB uses a socalled
+shard key to place each document within one of these ranges.
+
+When you shard this collection, you must declare one or more of these fields as the
+shard key. If you choose _id, then documents will be distributed based on ranges of
+object IDs.
+
+The concept of a chunk: chunk is a contiguous range of shard key values located on a single shard.
+
+chunks are split once they reach a certain size threshold. The default
+max chunk size is 64 MB or 100,000 documents, whichever comes first. As data is
+added to a new sharded cluster, the original chunk eventually reaches one of these
+thresholds, triggering a chunk split. Splitting a chunk is a simple operation; it basically
+involves dividing the original range into two ranges so that two chunks, each representing
+the same number of documents, are created.
+
+When MongoDB splits a chunk, it merely modifies
+the chunk metadata so that one chunk becomes two. Splitting a chunk, therefore,
+does not affect the physical ordering of the documents in a sharded collection. This
+means that splitting is simple and fast.
+
+Migrations are managed by a software process known as the balancer. The balancer’s
+job is to ensure that data remains evenly distributed across shards. It accomplishes
+this by keeping track of the number of chunks on each shard. Though the
+heuristic varies somewhat depending on total data size, the balancer will usually
+initiate a balancing round when the difference between the shard with the greatest
+number of chunks and the shard with the least number of chunks is greater than
+eight. During the balancing round, chunks are migrated from the shard with the
+greater number of chunks to the shard with fewer chunks until the two shards are
+roughly even.
+
+
+------------------------ Shards Indexing -------------------------------
+Each shard maintains its own indexes. This should be obvious, but to be clear,
+know that when you declare an index on a sharded collection, each shard builds
+a separate index for its portion of the collection. For example, when you issued
+the db.spreasheets.ensureIndex() command via mongos in the previous section,
+each individual shard processed the index creation command individually.
+2 It follows that the sharded collections on each shard should have the same
+indexes. If this ever isn’t the case, you’ll see inconsistent query performance.
+3 Sharded collections permit unique indexes on the _id field and on the shard
+key only. Unique indexes are prohibited elsewhere because enforcing them
+would require intershard communication, which is complicated and still
+deemed too slow to be worth implementing.
+
+
