@@ -1,0 +1,29 @@
+First, because MongoDB maps all data files to a virtual address space, all production
+deployments should be run on 64-bit machines.
+
+Be sure to select hardware
+(virtual or otherwise) with enough RAM to contain your frequently used indexes
+plus your working data set.
+
+The minimum recommended deployment topology is a three-member replica set. At
+least two members of the set must be data-storing (non-arbiter) replicas residing on
+separate machines. The third member may be yet another replica or it can be an arbiter,
+which doesn’t necessarily need its own machine; you can run an arbiter on an
+application server, for instance.
+
+If you expect your working set size to exceed RAM from the start, then you may
+want to begin with a sharded cluster, which consists of at least two replica sets.
+
+For production deployments, a single server isn’t recommended, even if journaling is
+enabled. Having just one machine complicates backup and recovery, and when there’s
+a server failure, there’s nothing to fail over to.
+
+MONGOIMPORT AND MONGOEXPORT
+Bundled with MongoDB are two utilities for importing and exporting data:
+mongoimport and mongoexport. You can use mongoimport to import JSON, CSV, and
+TSV files. This is frequently useful for loading data from relational databases into
+MongoDB:
+$ mongoimport -d stocks -c values --type csv --headerline stocks.csv
+
+Use mongoexport to export all of a collection’s data to a JSON or CSV file:
+$ mongoexport -d stocks -c values -o stocks.csv

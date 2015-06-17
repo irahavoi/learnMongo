@@ -1,0 +1,42 @@
+There are two general strategies for backing up a MongoDB database. The first is
+to use the mongodump and mongorestore utilities. The second, and probably the more
+common, is to copy the raw data files.
+
+mongodump writes the contents of a database as BSON files. mongorestore reads these
+files and restores them. These tools are useful for backing up individual collections
+and databases as well as the whole server. They can be run against a live server (you
+don’t have to lock or shut down the server) or you can point them to a set of data files,
+but only when the server is locked or shut down. The simplest way to run mongodump is
+like so:
+$ mongodump -h localhost --port 27017
+
+To restore BSON files, run mongorestore, and point it at the dump folder:
+$ mongorestore -h localhost --port 27017 dump
+
+
+COPYING THE DATA FILES Users frequently make the mistake of copying the
+data files or taking a snapshot without first locking the database. With journaling
+disabled, this will result in corruption of the copied files. When journaling
+is enabled, it’s safe to take a snapshot, but copying the files themselves is
+tricky, and easy to botch.
+So regardless of whether journaling is enabled, the recommendation of
+this book is to always lock the database before copying data files or taking a
+disk snapshot. The resulting peace of mind and guaranteed file integrity are
+well worth the minor delay incurred by locking.
+
+
+MongoDB includes a facility for repairing a database. You can initiate it from the command
+line to repair all databases on the server:
+$ mongod --repair
+Or you can run the repairDatabase command to repair a single database:
+> use cloud-docs
+> db.runCommand({repairDatabase: 1})
+
+Repair is an offline operation. While it’s running, the database will be locked against
+reads and writes.
+
+The repair process works by reading and rewriting all data files, discarding
+any corrupted documents in the process. It also rebuilds each index. This
+means that to repair a database, you need enough free disk space to store the rewrite
+of its data. To say repairs are expensive is an understatement, as repairing a very large
+database can take days.

@@ -1,0 +1,66 @@
+MongoDB supports only a simple, per-database authentication mechanism.
+
+By default, MongoDB will listen on all
+addresses on the machine. But you may want MongoDB to listen on one or more specific
+addresses instead. For this you can start mongod and mongos with the --bind_ip
+option, which takes a list of one or more comma-separated IP addresses.
+
+mongod --bind_ip 127.0.0.1,10.4.1.55
+
+---------------------------- AUTHENTICATION ------------------------------
+use admin
+ db.createUser(
+    {
+        user: 'testuser',
+        pwd: 'secret',
+        roles: []
+    })
+
+  db.dropUser('testuser')
+
+
+Creating admin user:
+   db.createUser({user:"adminuser",pwd:"secret", roles:[{role:"root",db:"admin"}]})
+
+With an admin user in place, you can enable authentication. To do so, restart the mongod
+instance with the --auth option:
+
+$ mongod --auth
+
+Replica set authentication
+Replica sets support the same authentication API just described, but enabling authentication
+for a replica set requires a couple of extra steps. To start, create a file containing
+at least six characters from the Base64 character set.6 The contents of the file will
+serve as a kind of password that each replica set member uses to authenticate with the
+others. As an example, you might create a file called secret.txt and fill it with the
+following:
+tOps3cr3tpa55word
+Place the file on each replica set member’s machine and adjust the permissions so
+that it’s accessible only by the owner:
+sudo chmod 600 /home/mongodb/secret.txt
+Finally, start each replica set member by specifying the location of the password file
+using the --keyFile option:
+mongod --keyFile /home/mongodb/secret.txt
+Authentication will now be enabled for the set. You’ll want to create an admin user in
+advance, as you did in the previous section.
+
+
+Logging:
+MongoDB requires that you specify the --logpath option when running it in the background.
+Next you can start mongod with the --logappend option. This will append to an
+existing log rather than overwriting it.
+
+
+Monitoring Tools:
+
+db.runCommand({serverStatus: 1}) - Useful information about status.
+
+db.runCommand({top: 1}) <-- db.runCommand({top: 1})
+
+db.currentOp() <-- Current Operation
+
+mongostat <-- Logs stats once per second
+
+
+UI tools for mongo:
+http://docs.mongodb.org/ecosystem/tools/administration-interfaces/
